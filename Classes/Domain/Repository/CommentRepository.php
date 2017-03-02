@@ -39,6 +39,19 @@ class CommentRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
     }
 
     /**
+     * @param string $url
+     * @return int
+     */
+    public function countByUrl($url)
+    {
+        $query = $this->createQuery();
+        $query->getQuerySettings()->setRespectStoragePage(false);
+        $constraints = [];
+        $constraints[] = $query->equals('url', $url);
+        return $query->matching($query->logicalAnd($constraints))->execute()->count();
+    }
+
+    /**
      * @return \TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController
      */
     protected function getTypoScriptFrontendController()
