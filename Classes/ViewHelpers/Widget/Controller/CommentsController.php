@@ -19,11 +19,17 @@ class CommentsController extends \TYPO3\CMS\Fluid\Core\Widget\AbstractWidgetCont
     protected $enableCommenting;
 
     /**
+     * @var string
+     */
+    protected $sort;
+
+    /**
      * @return void
      */
     public function initializeAction()
     {
         $this->enableCommenting = $this->widgetConfiguration['enableCommenting'];
+        $this->sort = $this->widgetConfiguration['sort'];
 
         if ($this->widgetConfiguration['url'] === '') {
             $this->url = $this->uriBuilder
@@ -42,7 +48,7 @@ class CommentsController extends \TYPO3\CMS\Fluid\Core\Widget\AbstractWidgetCont
     public function indexAction()
     {
         $this->view->assignMultiple([
-            'comments' => $this->getCommentRepository()->findTopLevelCommentsByUrl($this->url),
+            'comments' => $this->getCommentRepository()->findTopLevelCommentsByUrl($this->url, $this->sort),
             'enableCommenting' => $this->enableCommenting,
             'userIsLoggedIn' => $this->getTypoScriptFrontendController()->loginUser,
             'argumentPrefix' => $this->controllerContext->getRequest()->getArgumentPrefix()
@@ -59,6 +65,11 @@ class CommentsController extends \TYPO3\CMS\Fluid\Core\Widget\AbstractWidgetCont
     {
         $userUid = $this->getTypoScriptFrontendController()->fe_user->user['uid'];
 
+        $settings = $this->getSettings();
+        if (!isset($settings['enableModeration'])) {
+            $settings['enableModeration'] = 0;
+        }
+
         /** @var \TYPO3\CMS\Extbase\Domain\Model\FrontendUser $user */
         $user = $this->getFrontendUserRepository()->findByUid($userUid);
         if ($user !== null) {
@@ -68,7 +79,10 @@ class CommentsController extends \TYPO3\CMS\Fluid\Core\Widget\AbstractWidgetCont
             $comment->setUser($user);
             $comment->setPid($this->getTypoScriptFrontendController()->contentPid);
             $comment->setReplyTo($replyTo);
+            $comment->setHidden((bool)$settings['enableModeration']);
             $this->getCommentRepository()->add($comment);
+
+            $this->signalSlotDispatcher->dispatch(__CLASS__, 'afterCommentCreated', [$this->settings, $comment]);
         }
 
         header('Location: ' . $this->url);
@@ -100,5 +114,16 @@ class CommentsController extends \TYPO3\CMS\Fluid\Core\Widget\AbstractWidgetCont
         /** @var \TYPO3\CMS\Extbase\Domain\Repository\FrontendUserRepository $frontendUserRepository */
         $frontendUserRepository = $this->objectManager->get(\TYPO3\CMS\Extbase\Domain\Repository\FrontendUserRepository::class);
         return $frontendUserRepository;
+    }
+
+    /**
+     * @return array
+     */
+    protected function getSettings()
+    {
+        return $this->configurationManager->getConfiguration(
+            \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS,
+            'KoningComments'
+        );
     }
 }

@@ -40,6 +40,11 @@ class Comment extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     protected $replies;
 
     /**
+     * @var bool
+     */
+    protected $hidden;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -148,5 +153,22 @@ class Comment extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     public function setReplies(\TYPO3\CMS\Extbase\Persistence\ObjectStorage $replies)
     {
         $this->replies = $replies;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isHidden()
+    {
+        return $this->hidden;
+    }
+
+    /**
+     * @param bool $hidden
+     * @return void
+     */
+    public function setHidden($hidden)
+    {
+        $this->hidden = $hidden;
     }
 }
