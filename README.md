@@ -26,5 +26,5 @@ Example with url:
 
 ### Signals
 
-- ``KoninklijkeCollective\KoningComments\ViewHelpers\Widget\Controller\CommentsController``: ``afterCommentCreated``: you can use this signal to send and e-mail or other kind of notification after a comment has been created.
+- ``KoninklijkeCollective\KoningComments\ViewHelpers\Widget\Controller\CommentsController``: ``afterCommentCreated``: you can use this signal to send an e-mail or some other kind of notification after a comment has been created.
 
