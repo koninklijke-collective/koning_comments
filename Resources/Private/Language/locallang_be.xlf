@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.0">
+    <file source-language="en" datatype="plaintext" original="messages" date="2012-10-17T19:30:32Z" product-name="koning_comments">
+        <header/>
+        <body>
+            <trans-unit id="tx_koningcomments_domain_model_comment">
+                <source>Comment</source>
+            </trans-unit>
+            <trans-unit id="tx_koningcomments_domain_model_comment.date">
+                <source>Date</source>
+            </trans-unit>
+            <trans-unit id="tx_koningcomments_domain_model_comment.url">
+                <source>Url</source>
+            </trans-unit>
+            <trans-unit id="tx_koningcomments_domain_model_comment.user">
+                <source>User</source>
+            </trans-unit>
+            <trans-unit id="tx_koningcomments_domain_model_comment.body">
+                <source>Body</source>
+            </trans-unit>
+            <trans-unit id="tx_koningcomments_domain_model_comment.reply_to">
+                <source>Reply to</source>
+            </trans-unit>
+            <trans-unit id="tx_koningcomments_domain_model_comment.replies">
+                <source>Replies</source>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

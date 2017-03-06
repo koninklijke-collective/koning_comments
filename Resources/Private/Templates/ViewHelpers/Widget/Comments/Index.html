@@ -1,0 +1,94 @@
+<div class="koning-comments">
+    <f:render section="Comments" arguments="{
+        comments: comments,
+        userIsLoggedIn: userIsLoggedIn,
+        enableCommenting: enableCommenting,
+        argumentPrefix: argumentPrefix
+    }" />
+
+    <hr>
+
+    <f:render section="Form" arguments="{
+        userIsLoggedIn: userIsLoggedIn,
+        enableCommenting: enableCommenting,
+        argumentPrefix: argumentPrefix
+    }" />
+
+    <f:section name="Form">
+        <f:if condition="{enableCommenting}">
+            <f:if condition="{userIsLoggedIn}">
+                <f:then>
+                    <f:form actionUri="{f:widget.uri(action: 'create')}" fieldNamePrefix="{argumentPrefix}">
+                        <f:form.hidden name="replyTo" value="{replyTo}" />
+                        <div class="form-group">
+                            <f:form.textarea name="body" class="form-control" />
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <f:translate id="send" />
+                        </button>
+                    </f:form>
+                </f:then>
+                <f:else>
+                    <f:translate id="needs_login" />
+                </f:else>
+            </f:if>
+        </f:if>
+    </f:section>
+
+    <f:section name="Comments">
+        <f:if condition="{comments -> f:count()} > 0">
+            <f:then>
+                <ol>
+                    <f:for each="{comments}" as="comment">
+                        <f:render section="Comment" arguments="{
+                            comment: comment,
+                            userIsLoggedIn: userIsLoggedIn,
+                            enableCommenting: enableCommenting,
+                            argumentPrefix: argumentPrefix}" />
+                    </f:for>
+                </ol>
+            </f:then>
+            <f:else>
+                <f:translate id="no_comments_found" />
+            </f:else>
+        </f:if>
+    </f:section>
+
+    <f:section name="Comment">
+        <li id="koning-comment-{comment.uid}">
+            <h3>{comment.user.firstName} {comment.user.lastName}</h3>
+            <time><f:format.date format="%e %B %Y %H:%M">{comment.date}</f:format.date></time>
+            <p>
+                <f:format.nl2br>{comment.body}</f:format.nl2br>
+            </p>
+            <a href="#" data-role="toggle-reply-form">
+                <f:translate id="reply" />
+            </a>
+            <div data-role="reply-form" style="display: none;">
+                <f:render section="Form" arguments="{
+                    userIsLoggedIn: userIsLoggedIn,
+                    enableCommenting: enableCommenting,
+                    argumentPrefix: argumentPrefix,
+                    replyTo: comment
+                }" />
+            </div>
+            <f:if condition="{comment.replies}">
+                <f:render section="Comments" arguments="{
+                    comments: comment.replies,
+                    userIsLoggedIn: userIsLoggedIn,
+                    enableCommenting: enableCommenting,
+                    argumentPrefix: argumentPrefix
+                }" />
+            </f:if>
+        </li>
+    </f:section>
+
+    <script type="text/javascript">
+        window.onload = function() {
+            $('.koning-comments a[data-role="toggle-reply-form"]').click(function() {
+                $(this).parent().find('div[data-role="reply-form"]').first().toggle();
+                return false;
+            });
+        };
+    </script>
+</div>
