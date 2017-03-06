@@ -45,11 +45,10 @@ class Comment extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     protected $hidden;
 
     /**
-     * Constructor
+     * @return void
      */
-    public function __construct()
+    public function initializeObject()
     {
-        $this->date = new \DateTime();
         $this->replies = new \TYPO3\CMS\Extbase\Persistence\ObjectStorage();
     }
 

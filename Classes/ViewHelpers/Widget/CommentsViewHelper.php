@@ -35,11 +35,8 @@ class CommentsViewHelper extends \TYPO3\CMS\Fluid\Core\Widget\AbstractWidgetView
      * @param string $sort
      * @return \TYPO3\CMS\Extbase\Mvc\ResponseInterface
      */
-    public function render(
-        $url = '',
-        $enableCommenting = true,
-        $sort = 'DESC'
-    ) {
+    public function render($url = '', $enableCommenting = true, $sort = 'DESC')
+    {
         return $this->initiateSubRequest();
     }
 }

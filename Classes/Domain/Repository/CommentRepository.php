@@ -31,9 +31,11 @@ class CommentRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
     public function findTopLevelCommentsByUrl($url, $sort)
     {
         $query = $this->createQuery();
-        $constraints = [];
-        $constraints[] = $query->equals('url', $url);
-        $constraints[] = $query->equals('replyTo', '');
+        $constraints = [
+            $query->equals('url', $url),
+            $query->equals('replyTo', '')
+
+        ];
         $query->setOrderings(['date' => $sort]);
         return $query->matching($query->logicalAnd($constraints))->execute();
     }
@@ -46,8 +48,9 @@ class CommentRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
     {
         $query = $this->createQuery();
         $query->getQuerySettings()->setRespectStoragePage(false);
-        $constraints = [];
-        $constraints[] = $query->equals('url', $url);
+        $constraints = [
+            $query->equals('url', $url)
+        ];
         return $query->matching($query->logicalAnd($constraints))->execute()->count();
     }
 

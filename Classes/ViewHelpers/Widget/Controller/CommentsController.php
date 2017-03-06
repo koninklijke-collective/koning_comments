@@ -80,12 +80,16 @@ class CommentsController extends \TYPO3\CMS\Fluid\Core\Widget\AbstractWidgetCont
             $comment->setPid($this->getTypoScriptFrontendController()->contentPid);
             $comment->setReplyTo($replyTo);
             $comment->setHidden((bool)$settings['enableModeration']);
+            $comment->setDate(new \DateTime());
             $this->getCommentRepository()->add($comment);
+            $this->getPersistenceManager()->persistAll();
 
             $this->signalSlotDispatcher->dispatch(__CLASS__, 'afterCommentCreated', [$this->settings, $comment]);
-        }
 
-        header('Location: ' . $this->url);
+            \TYPO3\CMS\Core\Utility\HttpUtility::redirect($this->url . '#koning-comment-' . $comment->getUid());
+        } else {
+            \TYPO3\CMS\Core\Utility\HttpUtility::redirect($this->url);
+        }
     }
 
     /**
@@ -114,6 +118,16 @@ class CommentsController extends \TYPO3\CMS\Fluid\Core\Widget\AbstractWidgetCont
         /** @var \TYPO3\CMS\Extbase\Domain\Repository\FrontendUserRepository $frontendUserRepository */
         $frontendUserRepository = $this->objectManager->get(\TYPO3\CMS\Extbase\Domain\Repository\FrontendUserRepository::class);
         return $frontendUserRepository;
+    }
+
+    /**
+     * @return \TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface
+     */
+    protected function getPersistenceManager()
+    {
+        /** @var \TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface $persistenceManager */
+        $persistenceManager = $this->objectManager->get(\TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface::class);
+        return $persistenceManager;
     }
 
     /**
