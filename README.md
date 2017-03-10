@@ -1,6 +1,6 @@
-# koning_comments
-
-Offers a commenting widget for use in extensions.
+# TYPO3 Extension: Comments
+  * Description: Offers a commenting widget for use in extensions.
+  * Extension key: koning_comments
 
 ## Installation
 
