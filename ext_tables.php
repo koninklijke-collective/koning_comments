@@ -9,10 +9,4 @@ call_user_func(function ($extension) {
     );
 
     \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::allowTableOnStandardPages(\KoninklijkeCollective\KoningComments\Domain\Model\Comment::TABLE);
-
-    \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addStaticFile(
-        $extension,
-        'Configuration/TypoScript/',
-        'Koning Comments'
-    );
 }, $_EXTKEY);

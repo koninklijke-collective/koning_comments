@@ -1,7 +1,4 @@
 <?php
-if (!defined('TYPO3_MODE')) {
-    die ('Access denied.');
-}
 return call_user_func(function ($extension, $table) {
     return [
         'ctrl' => [
@@ -32,7 +29,7 @@ return call_user_func(function ($extension, $table) {
         'palettes' => [],
         'columns' => [
             'hidden' => [
-                'exclude' => 1,
+                'exclude' => true,
                 'label' => 'LLL:EXT:lang/locallang_general.xlf:LGL.hidden',
                 'config' => [
                     'type' => 'check',
@@ -40,29 +37,31 @@ return call_user_func(function ($extension, $table) {
                 ],
             ],
             'date' => [
-                'exclude' => 0,
+                'exclude' => false,
                 'label' => 'LLL:EXT:' . $extension . '/Resources/Private/Language/locallang_be.xlf:' . $table . '.date',
                 'config' => [
                     'type' => 'input',
-                    'eval' => 'datetime',
+                    'renderType' => 'inputDateTime',
+                    'eval' => 'datetime,int',
+                    'default' => 0,
                 ],
             ],
             'url' => [
-                'exclude' => 0,
+                'exclude' => false,
                 'label' => 'LLL:EXT:' . $extension . '/Resources/Private/Language/locallang_be.xlf:' . $table . '.url',
                 'config' => [
                     'type' => 'input',
                 ],
             ],
             'body' => [
-                'exclude' => 0,
+                'exclude' => false,
                 'label' => 'LLL:EXT:' . $extension . '/Resources/Private/Language/locallang_be.xlf:' . $table . '.body',
                 'config' => [
                     'type' => 'text',
                 ],
             ],
             'user' => [
-                'exclude' => 0,
+                'exclude' => false,
                 'label' => 'LLL:EXT:' . $extension . '/Resources/Private/Language/locallang_be.xlf:' . $table . '.user',
                 'config' => [
                     'type' => 'group',
@@ -74,7 +73,7 @@ return call_user_func(function ($extension, $table) {
                 ],
             ],
             'reply_to' => [
-                'exclude' => 0,
+                'exclude' => false,
                 'label' => 'LLL:EXT:' . $extension . '/Resources/Private/Language/locallang_be.xlf:' . $table . '.reply_to',
                 'config' => [
                     'type' => 'group',
@@ -86,7 +85,7 @@ return call_user_func(function ($extension, $table) {
                 ],
             ],
             'replies' => [
-                'exclude' => 0,
+                'exclude' => false,
                 'label' => 'LLL:EXT:' . $extension . '/Resources/Private/Language/locallang_be.xlf:' . $table . '.replies',
                 'config' => [
                     'type' => 'inline',
