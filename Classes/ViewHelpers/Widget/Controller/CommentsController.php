@@ -70,9 +70,7 @@ class CommentsController extends \TYPO3\CMS\Fluid\Core\Widget\AbstractWidgetCont
             $userUid = $this->getTypoScriptFrontendController()->fe_user->user['uid'];
 
             $settings = $this->getSettings();
-            if (!isset($settings['enableModeration'])) {
-                $settings['enableModeration'] = 0;
-            }
+            $moderationEnabled = (bool)($settings['enableModeration'] ?? false);
 
             /** @var \TYPO3\CMS\Extbase\Domain\Model\FrontendUser $user */
             $user = $this->getFrontendUserRepository()->findByUid($userUid);
@@ -83,7 +81,7 @@ class CommentsController extends \TYPO3\CMS\Fluid\Core\Widget\AbstractWidgetCont
                 $comment->setUser($user);
                 $comment->setPid($this->getTypoScriptFrontendController()->contentPid);
                 $comment->setReplyTo($replyTo);
-                $comment->setHidden((bool)$settings['enableModeration']);
+                $comment->setHidden($moderationEnabled);
                 $comment->setDate(new \DateTime());
                 $this->getCommentRepository()->add($comment);
                 $this->getPersistenceManager()->persistAll();

@@ -20,7 +20,8 @@ class CommentRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
     public function createQuery()
     {
         $query = parent::createQuery();
-        $query->getQuerySettings()->setStoragePageIds([$this->getTypoScriptFrontendController()->contentPid]);
+        // As this is by url, this should not be queried in frontend
+        $query->getQuerySettings()->setRespectStoragePage(false);
         return $query;
     }
 
@@ -52,13 +53,5 @@ class CommentRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
             $query->equals('url', $url),
         ];
         return $query->matching($query->logicalAnd($constraints))->execute()->count();
-    }
-
-    /**
-     * @return \TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController
-     */
-    protected function getTypoScriptFrontendController()
-    {
-        return $GLOBALS['TSFE'];
     }
 }
