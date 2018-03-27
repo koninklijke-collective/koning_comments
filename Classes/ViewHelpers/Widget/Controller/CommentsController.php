@@ -1,5 +1,8 @@
 <?php
+
 namespace KoninklijkeCollective\KoningComments\ViewHelpers\Widget\Controller;
+
+use TYPO3\CMS\Core\Utility\HttpUtility;
 
 /**
  * Comment widget controller
@@ -51,7 +54,7 @@ class CommentsController extends \TYPO3\CMS\Fluid\Core\Widget\AbstractWidgetCont
             'comments' => $this->getCommentRepository()->findTopLevelCommentsByUrl($this->url, $this->sort),
             'enableCommenting' => $this->enableCommenting,
             'userIsLoggedIn' => $this->getTypoScriptFrontendController()->loginUser,
-            'argumentPrefix' => $this->controllerContext->getRequest()->getArgumentPrefix()
+            'argumentPrefix' => $this->controllerContext->getRequest()->getArgumentPrefix(),
         ]);
     }
 
@@ -63,33 +66,40 @@ class CommentsController extends \TYPO3\CMS\Fluid\Core\Widget\AbstractWidgetCont
      */
     public function createAction($body, $replyTo = null)
     {
-        $userUid = $this->getTypoScriptFrontendController()->fe_user->user['uid'];
+        try {
+            $userUid = $this->getTypoScriptFrontendController()->fe_user->user['uid'];
 
-        $settings = $this->getSettings();
-        if (!isset($settings['enableModeration'])) {
-            $settings['enableModeration'] = 0;
+            $settings = $this->getSettings();
+            if (!isset($settings['enableModeration'])) {
+                $settings['enableModeration'] = 0;
+            }
+
+            /** @var \TYPO3\CMS\Extbase\Domain\Model\FrontendUser $user */
+            $user = $this->getFrontendUserRepository()->findByUid($userUid);
+            if ($user !== null) {
+                $comment = new \KoninklijkeCollective\KoningComments\Domain\Model\Comment();
+                $comment->setBody($body);
+                $comment->setUrl($this->url);
+                $comment->setUser($user);
+                $comment->setPid($this->getTypoScriptFrontendController()->contentPid);
+                $comment->setReplyTo($replyTo);
+                $comment->setHidden((bool)$settings['enableModeration']);
+                $comment->setDate(new \DateTime());
+                $this->getCommentRepository()->add($comment);
+                $this->getPersistenceManager()->persistAll();
+
+                // Now dispatch so other can use this
+                $this->signalSlotDispatcher->dispatch(__CLASS__, 'afterCommentCreated', [$this->settings, $comment]);
+
+                // Redirect to current url with comment id as hash to invoke browser scrolling
+                HttpUtility::redirect($this->url . '#koning-comment-' . $comment->getUid());
+            }
+        } catch (\Exception $e) {
+            // Do nothing
         }
 
-        /** @var \TYPO3\CMS\Extbase\Domain\Model\FrontendUser $user */
-        $user = $this->getFrontendUserRepository()->findByUid($userUid);
-        if ($user !== null) {
-            $comment = new \KoninklijkeCollective\KoningComments\Domain\Model\Comment();
-            $comment->setBody($body);
-            $comment->setUrl($this->url);
-            $comment->setUser($user);
-            $comment->setPid($this->getTypoScriptFrontendController()->contentPid);
-            $comment->setReplyTo($replyTo);
-            $comment->setHidden((bool)$settings['enableModeration']);
-            $comment->setDate(new \DateTime());
-            $this->getCommentRepository()->add($comment);
-            $this->getPersistenceManager()->persistAll();
-
-            $this->signalSlotDispatcher->dispatch(__CLASS__, 'afterCommentCreated', [$this->settings, $comment]);
-
-            \TYPO3\CMS\Core\Utility\HttpUtility::redirect($this->url . '#koning-comment-' . $comment->getUid());
-        } else {
-            \TYPO3\CMS\Core\Utility\HttpUtility::redirect($this->url);
-        }
+        // Always fallback on default url redirect
+        HttpUtility::redirect($this->url);
     }
 
     /**

@@ -1,4 +1,5 @@
 <?php
+
 namespace KoninklijkeCollective\KoningComments\ViewHelpers\Widget;
 
 /**
@@ -15,7 +16,7 @@ namespace KoninklijkeCollective\KoningComments\ViewHelpers\Widget;
  *
  * Example with url:
  *
- * <c:widget.comments url="{f:uri.action(action: 'detail', arguments: '{identifier: \'{item.uid}\'}', absolute: 1, noCacheHash: 1)}" />
+ * <c:widget.comments url="{f:uri.action(action: 'detail', arguments: '{identifier: \'{item.uid}\'}', absolute: 1)}" />
  *
  * @package KoninklijkeCollective\KoningComments\ViewHelpers\Widget
  */

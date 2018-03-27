@@ -1,4 +1,5 @@
 <?php
+
 namespace KoninklijkeCollective\KoningComments\Domain\Model;
 
 /**
@@ -8,6 +9,8 @@ namespace KoninklijkeCollective\KoningComments\Domain\Model;
  */
 class Comment extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 {
+    const TABLE = 'tx_koningcomments_domain_model_comment';
+
     /**
      * @var \DateTime
      */

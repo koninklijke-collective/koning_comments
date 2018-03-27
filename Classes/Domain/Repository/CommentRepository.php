@@ -1,4 +1,5 @@
 <?php
+
 namespace KoninklijkeCollective\KoningComments\Domain\Repository;
 
 /**
@@ -33,7 +34,7 @@ class CommentRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
         $query = $this->createQuery();
         $constraints = [
             $query->equals('url', $url),
-            $query->equals('replyTo', '')
+            $query->equals('replyTo', ''),
 
         ];
         $query->setOrderings(['date' => $sort]);
@@ -47,9 +48,8 @@ class CommentRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
     public function countByUrl($url)
     {
         $query = $this->createQuery();
-        $query->getQuerySettings()->setRespectStoragePage(false);
         $constraints = [
-            $query->equals('url', $url)
+            $query->equals('url', $url),
         ];
         return $query->matching($query->logicalAnd($constraints))->execute()->count();
     }

@@ -1,4 +1,5 @@
 <?php
+
 namespace KoninklijkeCollective\KoningComments\ViewHelpers;
 
 /**
