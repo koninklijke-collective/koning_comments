@@ -29,7 +29,7 @@ return call_user_func(function ($extension, $table) {
         'palettes' => [],
         'columns' => [
             'hidden' => [
-                'exclude' => true,
+                'exclude' => false,
                 'label' => 'LLL:EXT:lang/locallang_general.xlf:LGL.hidden',
                 'config' => [
                     'type' => 'check',
