@@ -19,6 +19,7 @@ return call_user_func(function ($extension, $table) {
             'typeicon_classes' => [
                 'default' => 'tcarecords-tx_koningcomments_domain_model_comment-default',
             ],
+            'default_sortby' => 'date DESC',
         ],
         'interface' => [
             'showRecordFieldList' => 'hidden, date, url, body, user, reply_to, replies',
