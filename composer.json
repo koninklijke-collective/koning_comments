@@ -15,7 +15,6 @@
         "typo3/cms-core": ">=9.5.0 <10.0.0"
     },
     "replace": {
-        "koning_comments": "self.version",
         "typo3-ter/koning-comments": "self.version"
     },
     "autoload": {
