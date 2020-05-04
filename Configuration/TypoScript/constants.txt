@@ -4,6 +4,7 @@ plugin.tx_koningcomments {
         partialRootPaths = EXT:koning_comments/Resources/Private/Partials
         layoutRootPaths = EXT:koning_comments/Resources/Private/Layouts
     }
+
     settings {
         enableModeration = 0
     }

@@ -2,17 +2,25 @@
 
 namespace KoninklijkeCollective\KoningComments\ViewHelpers;
 
-/**
- * View helper: Comment count
- *
- * @package KoninklijkeCollective\KoningComments\ViewHelpers
- */
-class CommentCountViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper
+use KoninklijkeCollective\KoningComments\Domain\Repository\CommentRepository;
+
+class CommentCountViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper
 {
+    /** @var \KoninklijkeCollective\KoningComments\Domain\Repository\CommentRepository */
+    protected $repository;
+
+    /**
+     * @param  \KoninklijkeCollective\KoningComments\Domain\Repository\CommentRepository  $repository
+     */
+    public function __construct(CommentRepository $repository)
+    {
+        $this->repository = $repository;
+    }
+
     /**
      * @return void
      */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         $this->registerArgument('url', 'string', 'Url of the comments to count', true);
     }
@@ -20,18 +28,8 @@ class CommentCountViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractVi
     /**
      * @return int
      */
-    public function render()
+    public function render(): int
     {
-        return $this->getCommentRepository()->countByUrl($this->arguments['url']);
-    }
-
-    /**
-     * @return \KoninklijkeCollective\KoningComments\Domain\Repository\CommentRepository
-     */
-    protected function getCommentRepository()
-    {
-        /** @var \KoninklijkeCollective\KoningComments\Domain\Repository\CommentRepository $commentRepository */
-        $commentRepository = $this->objectManager->get(\KoninklijkeCollective\KoningComments\Domain\Repository\CommentRepository::class);
-        return $commentRepository;
+        return $this->repository->countByUrl($this->arguments['url']);
     }
 }

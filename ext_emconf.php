@@ -1,4 +1,5 @@
 <?php
+
 $EM_CONF[$_EXTKEY] = [
     'title' => 'Comments',
     'description' => 'Commenting system based on fe_users',
