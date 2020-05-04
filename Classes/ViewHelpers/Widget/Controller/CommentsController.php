@@ -2,69 +2,63 @@
 
 namespace KoninklijkeCollective\KoningComments\ViewHelpers\Widget\Controller;
 
+use DateTime;
+use Exception;
+use KoninklijkeCollective\KoningComments\Domain\Model\Comment;
+use KoninklijkeCollective\KoningComments\Domain\Repository\CommentRepository;
 use TYPO3\CMS\Core\Utility\HttpUtility;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
+use TYPO3\CMS\Extbase\Domain\Repository\FrontendUserRepository;
+use TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface;
+use TYPO3\CMS\Fluid\Core\Widget\AbstractWidgetController;
+use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 
-/**
- * Comment widget controller
- *
- * @package KoninklijkeCollective\KoningComments\ViewHelpers\Widget\Controller
- */
-class CommentsController extends \TYPO3\CMS\Fluid\Core\Widget\AbstractWidgetController
+class CommentsController extends AbstractWidgetController
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $url;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     protected $enableCommenting;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $sort;
 
     /**
      * @return void
      */
-    public function initializeAction()
+    public function initializeAction(): void
     {
-        $this->enableCommenting = $this->widgetConfiguration['enableCommenting'];
-        $this->sort = $this->widgetConfiguration['sort'];
-
-        if ($this->widgetConfiguration['url'] === '') {
-            $this->url = $this->uriBuilder
+        $this->enableCommenting = $this->widgetConfiguration['enableCommenting'] ?? true;
+        $this->sort = $this->widgetConfiguration['sort'] ?? 'DESC';
+        $this->url = $this->widgetConfiguration['url']
+            ?: $this->uriBuilder
                 ->reset()
                 ->setTargetPageUid($this->getTypoScriptFrontendController()->id)
                 ->setCreateAbsoluteUri(true)
                 ->build();
-        } else {
-            $this->url = $this->widgetConfiguration['url'];
-        }
     }
 
     /**
      * @return void
      */
-    public function indexAction()
+    public function indexAction(): void
     {
         $this->view->assignMultiple([
             'comments' => $this->getCommentRepository()->findTopLevelCommentsByUrl($this->url, $this->sort),
             'enableCommenting' => $this->enableCommenting,
-            'userIsLoggedIn' => $this->getTypoScriptFrontendController()->loginUser,
+            'userIsLoggedIn' => $this->getTypoScriptFrontendController()->fe_user->user['uid'] > 0,
             'argumentPrefix' => $this->controllerContext->getRequest()->getArgumentPrefix(),
         ]);
     }
 
     /**
-     * @param string $body
-     * @param \KoninklijkeCollective\KoningComments\Domain\Model\Comment $replyTo
-     * @validate $body NotEmpty
+     * @TYPO3\CMS\Extbase\Annotation\Validate("NotEmpty", param="body")
+     * @param  string  $body
+     * @param  \KoninklijkeCollective\KoningComments\Domain\Model\Comment  $replyTo
      * @return void
      */
-    public function createAction($body, $replyTo = null)
+    public function createAction(string $body, ?Comment $replyTo = null): void
     {
         try {
             $userUid = $this->getTypoScriptFrontendController()->fe_user->user['uid'];
@@ -75,24 +69,24 @@ class CommentsController extends \TYPO3\CMS\Fluid\Core\Widget\AbstractWidgetCont
             /** @var \TYPO3\CMS\Extbase\Domain\Model\FrontendUser $user */
             $user = $this->getFrontendUserRepository()->findByUid($userUid);
             if ($user !== null) {
-                $comment = new \KoninklijkeCollective\KoningComments\Domain\Model\Comment();
+                $comment = new Comment();
                 $comment->setBody($body);
                 $comment->setUrl($this->url);
                 $comment->setUser($user);
                 $comment->setPid($this->getTypoScriptFrontendController()->contentPid);
                 $comment->setReplyTo($replyTo);
                 $comment->setHidden($moderationEnabled);
-                $comment->setDate(new \DateTime());
+                $comment->setDate(new DateTime());
                 $this->getCommentRepository()->add($comment);
                 $this->getPersistenceManager()->persistAll();
 
                 // Now dispatch so other can use this
-                $this->signalSlotDispatcher->dispatch(__CLASS__, 'afterCommentCreated', [$this->settings, $comment]);
+                $this->signalSlotDispatcher->dispatch(self::class, 'afterCommentCreated', [$this->settings, $comment]);
 
                 // Redirect to current url with comment id as hash to invoke browser scrolling
                 HttpUtility::redirect($this->url . '#koning-comment-' . $comment->getUid());
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Do nothing
         }
 
@@ -103,7 +97,7 @@ class CommentsController extends \TYPO3\CMS\Fluid\Core\Widget\AbstractWidgetCont
     /**
      * @return \TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController
      */
-    protected function getTypoScriptFrontendController()
+    protected function getTypoScriptFrontendController(): TypoScriptFrontendController
     {
         return $GLOBALS['TSFE'];
     }
@@ -111,40 +105,43 @@ class CommentsController extends \TYPO3\CMS\Fluid\Core\Widget\AbstractWidgetCont
     /**
      * @return \KoninklijkeCollective\KoningComments\Domain\Repository\CommentRepository
      */
-    protected function getCommentRepository()
+    protected function getCommentRepository(): CommentRepository
     {
         /** @var \KoninklijkeCollective\KoningComments\Domain\Repository\CommentRepository $commentRepository */
-        $commentRepository = $this->objectManager->get(\KoninklijkeCollective\KoningComments\Domain\Repository\CommentRepository::class);
+        $commentRepository = $this->objectManager->get(CommentRepository::class);
+
         return $commentRepository;
     }
 
     /**
      * @return \TYPO3\CMS\Extbase\Domain\Repository\FrontendUserRepository
      */
-    protected function getFrontendUserRepository()
+    protected function getFrontendUserRepository(): FrontendUserRepository
     {
         /** @var \TYPO3\CMS\Extbase\Domain\Repository\FrontendUserRepository $frontendUserRepository */
-        $frontendUserRepository = $this->objectManager->get(\TYPO3\CMS\Extbase\Domain\Repository\FrontendUserRepository::class);
+        $frontendUserRepository = $this->objectManager->get(FrontendUserRepository::class);
+
         return $frontendUserRepository;
     }
 
     /**
      * @return \TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface
      */
-    protected function getPersistenceManager()
+    protected function getPersistenceManager(): PersistenceManagerInterface
     {
         /** @var \TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface $persistenceManager */
-        $persistenceManager = $this->objectManager->get(\TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface::class);
+        $persistenceManager = $this->objectManager->get(PersistenceManagerInterface::class);
+
         return $persistenceManager;
     }
 
     /**
      * @return array
      */
-    protected function getSettings()
+    protected function getSettings(): array
     {
         return $this->configurationManager->getConfiguration(
-            \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS,
+            ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS,
             'KoningComments'
         );
     }

@@ -8,7 +8,7 @@
         userIsLoggedIn: userIsLoggedIn,
         enableCommenting: enableCommenting,
         argumentPrefix: argumentPrefix
-    }" />
+    }"/>
 
     <hr>
 
@@ -16,24 +16,24 @@
         userIsLoggedIn: userIsLoggedIn,
         enableCommenting: enableCommenting,
         argumentPrefix: argumentPrefix
-    }" />
+    }"/>
 
     <f:section name="Form">
         <f:if condition="{enableCommenting}">
             <f:if condition="{userIsLoggedIn}">
                 <f:then>
                     <f:form actionUri="{f:widget.uri(action: 'create')}" fieldNamePrefix="{argumentPrefix}">
-                        <f:form.hidden name="replyTo" value="{replyTo}" />
+                        <f:form.hidden name="replyTo" value="{replyTo}"/>
                         <div class="form-group">
-                            <f:form.textarea name="body" class="form-control" />
+                            <f:form.textarea name="body" class="form-control"/>
                         </div>
                         <button type="submit" class="btn btn-primary">
-                            <f:translate id="send" />
+                            <f:translate id="send"/>
                         </button>
                     </f:form>
                 </f:then>
                 <f:else>
-                    <f:translate id="needs_login" />
+                    <f:translate id="needs_login"/>
                 </f:else>
             </f:if>
         </f:if>
@@ -48,12 +48,12 @@
                             comment: comment,
                             userIsLoggedIn: userIsLoggedIn,
                             enableCommenting: enableCommenting,
-                            argumentPrefix: argumentPrefix}" />
+                            argumentPrefix: argumentPrefix}"/>
                     </f:for>
                 </ol>
             </f:then>
             <f:else>
-                <f:translate id="no_comments_found" />
+                <f:translate id="no_comments_found"/>
             </f:else>
         </f:if>
     </f:section>
@@ -61,12 +61,14 @@
     <f:section name="Comment">
         <li id="koning-comment-{comment.uid}">
             <h3>{comment.user.firstName} {comment.user.lastName}</h3>
-            <time><f:format.date format="%e %B %Y %H:%M">{comment.date}</f:format.date></time>
+            <time>
+                <f:format.date format="%e %B %Y %H:%M">{comment.date}</f:format.date>
+            </time>
             <p>
                 <f:format.nl2br>{comment.body}</f:format.nl2br>
             </p>
             <a href="#" data-role="toggle-reply-form">
-                <f:translate id="reply" />
+                <f:translate id="reply"/>
             </a>
             <div data-role="reply-form" style="display: none;">
                 <f:render section="Form" arguments="{
@@ -74,7 +76,7 @@
                     enableCommenting: enableCommenting,
                     argumentPrefix: argumentPrefix,
                     replyTo: comment
-                }" />
+                }"/>
             </div>
             <f:if condition="{comment.replies}">
                 <f:render section="Comments" arguments="{
@@ -82,18 +84,18 @@
                     userIsLoggedIn: userIsLoggedIn,
                     enableCommenting: enableCommenting,
                     argumentPrefix: argumentPrefix
-                }" />
+                }"/>
             </f:if>
         </li>
     </f:section>
 
     <script type="text/javascript">
-        window.onload = function() {
-            $('.koning-comments a[data-role="toggle-reply-form"]').click(function() {
-                $(this).parent().find('div[data-role="reply-form"]').first().toggle();
-                return false;
-            });
-        };
+    window.onload = function () {
+        $('.koning-comments a[data-role="toggle-reply-form"]').click(function () {
+            $(this).parent().find('div[data-role="reply-form"]').first().toggle();
+            return false;
+        });
+    };
     </script>
 </div>
 </html>

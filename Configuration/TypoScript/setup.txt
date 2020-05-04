@@ -1,15 +1,18 @@
 plugin.tx_koningcomments {
     view {
-       templateRootPaths {
+        templateRootPaths {
             10 = {$plugin.tx_koningcomments.view.templateRootPath}
         }
+
         partialRootPaths {
             10 = {$plugin.tx_koningcomments.view.partialRootPath}
         }
+
         layoutRootPaths {
             10 = {$plugin.tx_koningcomments.view.layoutRootPath}
         }
     }
+
     settings {
         enableModeration = {$plugin.tx_koningcomments.settings.enableModeration}
     }
